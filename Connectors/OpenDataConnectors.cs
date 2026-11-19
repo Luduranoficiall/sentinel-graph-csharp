@@ -829,3 +829,413 @@ public sealed class OpenDataConnectors
             Label = "NovaTec Soluções Digitais SPE Ltda",
             Document = "51.209.441/0001-88",
             Layer = NodeLayer.L
+
+                Layer = NodeLayer.L2_EmpresaCnpj,
+            SubType = "SPE Recém-Aberta — Capital Social Ínfimo",
+            CreatedDate = new DateTime(2025, 02, 03),
+            Source = "BrasilAPI (Receita Federal) | PNCP",
+            Metadata = new()
+            {
+                ["CapitalSocial"] = "15000",
+                ["CapitalSocialFormatado"] = "R$ 15.000,00",
+                ["DataAbertura"] = "2025-02-03",
+                ["CNAE"] = "Consultoria em tecnologia da informação",
+                ["Localizacao"] = "Brasília/DF"
+            }
+        });
+
+        _graph.UpsertNode(new GraphNode
+        {
+            Id = "L3-CONTRATO-TI-218",
+            Label = "Contrato TI & Analytics #218/2025",
+            Document = "CTR-218/2025-SGI",
+            Layer = NodeLayer.L3_ContratoEmenda,
+            SubType = "Licitação + Aditivo Emergencial 25%",
+            FinancialExposure = 3_240_000m,
+            CreatedDate = new DateTime(2025, 04, 15), // 71 dias após abertura da NovaTec SPE
+            Source = "Portal da Transparência (CGU) | PNCP",
+            Metadata = new()
+            {
+                ["Modalidade"] = "Pregão Eletrônico + Aditivo Emergencial",
+                ["Objeto"] = "Plataforma de gestão e licenciamento corporativo"
+            }
+        });
+
+        _graph.UpsertNode(new GraphNode
+        {
+            Id = "L4-SEC-INOVACAO",
+            Label = "Secretaria de Gestão & Inovação Pública",
+            Document = "UG 201055",
+            Layer = NodeLayer.L4_DoadorOrgao,
+            SubType = "Órgão Público Contratante",
+            Source = "Portal da Transparência (CGU)"
+        });
+
+        _graph.UpsertEdge(new GraphEdge
+        {
+            Id = "E-C2-EXASSESSOR",
+            SourceId = "L0-DEP-MARCOS",
+            TargetId = "L1-EDUARDO-TAVARES",
+            RelationType = "EX_ASSESSOR_GABINETE",
+            Weight = 0.85,
+            FinancialValue = 0m,
+            OfficialSource = "Câmara dos Deputados — Folha de Gabinete",
+            EventDate = new DateTime(2024, 12, 05)
+        });
+
+        _graph.UpsertEdge(new GraphEdge
+        {
+            Id = "E-C2-SOCIO",
+            SourceId = "L1-EDUARDO-TAVARES",
+            TargetId = "L2-NOVATEC-SPE",
+            RelationType = "SOCIO_ADMINISTRADOR",
+            Weight = 0.94,
+            FinancialValue = 0m,
+            OfficialSource = "Receita Federal (QSA)",
+            EventDate = new DateTime(2025, 02, 03)
+        });
+
+        _graph.UpsertEdge(new GraphEdge
+        {
+            Id = "E-C2-ORGAO-CTR",
+            SourceId = "L4-SEC-INOVACAO",
+            TargetId = "L3-CONTRATO-TI-218",
+            RelationType = "LICITACAO_ADITIVO",
+            Weight = 0.88,
+            FinancialValue = 3_240_000m,
+            OfficialSource = "PNCP / Portal da Transparência",
+            EventDate = new DateTime(2025, 04, 15)
+        });
+
+        _graph.UpsertEdge(new GraphEdge
+        {
+            Id = "E-C2-CTR-NOVATEC",
+            SourceId = "L3-CONTRATO-TI-218",
+            TargetId = "L2-NOVATEC-SPE",
+            RelationType = "CONTRATO_ADITIVO_CONCENTRADO",
+            Weight = 0.96,
+            FinancialValue = 3_240_000m,
+            OfficialSource = "PNCP / Diário Oficial da União",
+            EventDate = new DateTime(2025, 04, 15)
+        });
+
+        // =========================================================================
+        // CASO 3 (ALTA / CRÍTICO): Duplo Vínculo Simultâneo (Ordenador de Despesas + Sócio)
+        // =========================================================================
+        _graph.UpsertNode(new GraphNode
+        {
+            Id = "L0-DIR-CLAUDIO",
+            Label = "Cláudio Roberto Mendonça",
+            Document = "CPF ***.615.208-**",
+            Layer = NodeLayer.L0_AgentePublico,
+            SubType = "Diretor de Compras / Ordenador de Despesas",
+            Source = "SIAPE / Portal da Transparência (CGU)",
+            Metadata = new()
+            {
+                ["Cargo"] = "DAS-5 — Diretor de Suprimentos e Compras",
+                ["Orgao"] = "Secretaria Estadual de Saúde Integrada",
+                ["SituacaoFuncional"] = "Ativo Permanente"
+            }
+        });
+
+        _graph.UpsertNode(new GraphNode
+        {
+            Id = "L2-MEDPRIME-DIST",
+            Label = "MedPrime Distribuidora Hospitalar Ltda",
+            Document = "28.940.112/0001-67",
+            Layer = NodeLayer.L2_EmpresaCnpj,
+            SubType = "Fornecedor Hospitalar — QSA Conflitante",
+            CreatedDate = new DateTime(2021, 08, 19),
+            Source = "BrasilAPI (Receita Federal) | PNCP",
+            Metadata = new()
+            {
+                ["CapitalSocial"] = "250000",
+                ["CapitalSocialFormatado"] = "R$ 250.000,00",
+                ["DataAbertura"] = "2021-08-19",
+                ["CNAE"] = "Comércio atacadista de instrumentos hospitalares",
+                ["Localizacao"] = "São Paulo/SP"
+            }
+        });
+
+        _graph.UpsertNode(new GraphNode
+        {
+            Id = "L3-DISPENSA-412",
+            Label = "Dispensa Hospitalar #412/2025",
+            Document = "DSP-412/2025-SES",
+            Layer = NodeLayer.L3_ContratoEmenda,
+            SubType = "Dispensa de Licitação — Insumos Críticos",
+            FinancialExposure = 2_180_000m,
+            CreatedDate = new DateTime(2025, 05, 04),
+            Source = "PNCP | Portal da Transparência",
+            Metadata = new()
+            {
+                ["Modalidade"] = "Dispensa de Licitação",
+                ["Justificativa"] = "Aquisição emergencial de insumos hospitalares"
+            }
+        });
+
+        _graph.UpsertNode(new GraphNode
+        {
+            Id = "L4-SEC-SAUDE",
+            Label = "Secretaria de Saúde Integrada",
+            Document = "UG 360041",
+            Layer = NodeLayer.L4_DoadorOrgao,
+            SubType = "Órgão Público Contratante",
+            Source = "Portal da Transparência (CGU)"
+        });
+
+        _graph.UpsertEdge(new GraphEdge
+        {
+            Id = "E-C3-SERVIDOR",
+            SourceId = "L0-DIR-CLAUDIO",
+            TargetId = "L4-SEC-SAUDE",
+            RelationType = "SERVIDOR_ORDENADOR",
+            Weight = 0.90,
+            FinancialValue = 0m,
+            OfficialSource = "SIAPE / Portal da Transparência",
+            EventDate = new DateTime(2023, 03, 01)
+        });
+
+        _graph.UpsertEdge(new GraphEdge
+        {
+            Id = "E-C3-DUPLO-SOCIO",
+            SourceId = "L0-DIR-CLAUDIO",
+            TargetId = "L2-MEDPRIME-DIST",
+            RelationType = "SOCIO_OCULTO_QSA",
+            Weight = 0.98,
+            FinancialValue = 0m,
+            OfficialSource = "Receita Federal (QSA) — Cruzamento CPF",
+            EventDate = new DateTime(2024, 06, 10)
+        });
+
+        _graph.UpsertEdge(new GraphEdge
+        {
+            Id = "E-C3-ORDENA-DISPENSA",
+            SourceId = "L0-DIR-CLAUDIO",
+            TargetId = "L3-DISPENSA-412",
+            RelationType = "ORDENADOR_DISPENSA",
+            Weight = 0.95,
+            FinancialValue = 2_180_000m,
+            OfficialSource = "Diário Oficial / PNCP",
+            EventDate = new DateTime(2025, 05, 04)
+        });
+
+        _graph.UpsertEdge(new GraphEdge
+        {
+            Id = "E-C3-DISPENSA-MEDPRIME",
+            SourceId = "L3-DISPENSA-412",
+            TargetId = "L2-MEDPRIME-DIST",
+            RelationType = "CONTRATO_DISPENSA",
+            Weight = 0.96,
+            FinancialValue = 2_180_000m,
+            OfficialSource = "PNCP / Notas de Empenho",
+            EventDate = new DateTime(2025, 05, 04)
+        });
+
+        // =========================================================================
+        // CASO 4 (MÉDIA / ALTA): Concentração de Contratos em Fornecedor Ligado a Doador
+        // =========================================================================
+        _graph.UpsertNode(new GraphNode
+        {
+            Id = "L0-PREF-SILVIA",
+            Label = "Pref. Sílvia Nogueira Prado",
+            Document = "CPF ***.204.889-**",
+            Layer = NodeLayer.L0_AgentePublico,
+            SubType = "Chefe do Executivo Municipal",
+            Source = "TSE DivulgaCand | TCE",
+            Metadata = new()
+            {
+                ["Cargo"] = "Prefeita Municipal",
+                ["UF"] = "PR",
+                ["Mandato"] = "2025-2028"
+            }
+        });
+
+        _graph.UpsertNode(new GraphNode
+        {
+            Id = "L1-RODRIGO-PRADO",
+            Label = "Rodrigo Nogueira Barros",
+            Document = "CPF ***.531.019-**",
+            Layer = NodeLayer.L1_FamiliarSocio,
+            SubType = "Sócio Representante Comercial",
+            Source = "Receita Federal (QSA)"
+        });
+
+        _graph.UpsertNode(new GraphNode
+        {
+            Id = "L2-ALFA-PAVIMENTACAO",
+            Label = "Alfa Pavimentação & Engenharia S.A.",
+            Document = "19.332.710/0001-05",
+            Layer = NodeLayer.L2_EmpresaCnpj,
+            SubType = "Fornecedor Recorrente de Obras",
+            CreatedDate = new DateTime(2016, 04, 11),
+            Source = "BrasilAPI (Receita Federal) | TCE",
+            Metadata = new()
+            {
+                ["CapitalSocial"] = "1800000",
+                ["CapitalSocialFormatado"] = "R$ 1.800.000,00",
+                ["DataAbertura"] = "2016-04-11",
+                ["Localizacao"] = "Curitiba/PR"
+            }
+        });
+
+        _graph.UpsertNode(new GraphNode
+        {
+            Id = "L3-LICITACAO-77",
+            Label = "Concorrência Pavimentação #077/2025",
+            Document = "CONC-077/2025",
+            Layer = NodeLayer.L3_ContratoEmenda,
+            SubType = "Concorrência Pública — Lote Único",
+            FinancialExposure = 1_190_000m,
+            CreatedDate = new DateTime(2025, 04, 28),
+            Source = "TCE | PNCP"
+        });
+
+        _graph.UpsertNode(new GraphNode
+        {
+            Id = "L3-ADITIVO-77A",
+            Label = "Termo Aditivo #077-A/2025",
+            Document = "ADT-077A/2025",
+            Layer = NodeLayer.L3_ContratoEmenda,
+            SubType = "Reequilíbrio Econômico-Financeiro",
+            FinancialExposure = 440_000m,
+            CreatedDate = new DateTime(2025, 06, 18),
+            Source = "TCE | PNCP"
+        });
+
+        _graph.UpsertEdge(new GraphEdge
+        {
+            Id = "E-C4-SOCIO-ALFA",
+            SourceId = "L1-RODRIGO-PRADO",
+            TargetId = "L2-ALFA-PAVIMENTACAO",
+            RelationType = "SOCIO_REPRESENTANTE",
+            Weight = 0.78,
+            FinancialValue = 0m,
+            OfficialSource = "Receita Federal (QSA)"
+        });
+
+        _graph.UpsertEdge(new GraphEdge
+        {
+            Id = "E-C4-DOACAO-PREF",
+            SourceId = "L1-RODRIGO-PRADO",
+            TargetId = "L0-PREF-SILVIA",
+            RelationType = "DOACAO_CAMPANHA",
+            Weight = 0.80,
+            FinancialValue = 145_000m,
+            OfficialSource = "TSE — Prestação de Contas",
+            EventDate = new DateTime(2024, 09, 25)
+        });
+
+        _graph.UpsertEdge(new GraphEdge
+        {
+            Id = "E-C4-PREF-LIC",
+            SourceId = "L0-PREF-SILVIA",
+            TargetId = "L3-LICITACAO-77",
+            RelationType = "HOMOLOGACAO_LICITACAO",
+            Weight = 0.72,
+            FinancialValue = 1_190_000m,
+            OfficialSource = "TCE / Portal Municipal",
+            EventDate = new DateTime(2025, 04, 28)
+        });
+
+        _graph.UpsertEdge(new GraphEdge
+        {
+            Id = "E-C4-LIC-ALFA",
+            SourceId = "L3-LICITACAO-77",
+            TargetId = "L2-ALFA-PAVIMENTACAO",
+            RelationType = "CONTRATO_LICITACAO",
+            Weight = 0.75,
+            FinancialValue = 1_190_000m,
+            OfficialSource = "PNCP",
+            EventDate = new DateTime(2025, 04, 28)
+        });
+
+        _graph.UpsertEdge(new GraphEdge
+        {
+            Id = "E-C4-ADITIVO-ALFA",
+            SourceId = "L3-ADITIVO-77A",
+            TargetId = "L2-ALFA-PAVIMENTACAO",
+            RelationType = "ADITIVO_CONTRATUAL",
+            Weight = 0.74,
+            FinancialValue = 440_000m,
+            OfficialSource = "PNCP",
+            EventDate = new DateTime(2025, 06, 18)
+        });
+
+        _graph.UpsertEdge(new GraphEdge
+        {
+            Id = "E-C4-LIC-ADITIVO",
+            SourceId = "L3-LICITACAO-77",
+            TargetId = "L3-ADITIVO-77A",
+            RelationType = "GERA_ADITIVO",
+            Weight = 0.70,
+            FinancialValue = 440_000m,
+            OfficialSource = "PNCP",
+            EventDate = new DateTime(2025, 06, 18)
+        });
+
+        _graph.RecalculateAllRisks();
+    }
+
+    public static string FormatCnpj(string cnpj)
+    {
+        var digits = GraphEngine.NormalizeDigits(cnpj);
+        if (digits.Length != 14) return cnpj;
+        return $"{digits[..2]}.{digits[2..5]}.{digits[5..8]}/{digits[8..12]}-{digits[12..14]}";
+    }
+
+    private sealed class BrasilApiCnpjDto
+    {
+        [JsonPropertyName("razao_social")]
+        public string? RazaoSocial { get; set; }
+
+        [JsonPropertyName("nome_fantasia")]
+        public string? NomeFantasia { get; set; }
+
+        [JsonPropertyName("capital_social")]
+        public decimal CapitalSocial { get; set; }
+
+        [JsonPropertyName("data_inicio_atividade")]
+        public string? DataInicioAtividade { get; set; }
+
+        [JsonPropertyName("descricao_situacao_cadastral")]
+        public string? DescricaoSituacaoCadastral { get; set; }
+
+        [JsonPropertyName("cnae_fiscal_descricao")]
+        public string? CnaeFiscalDescricao { get; set; }
+
+        [JsonPropertyName("municipio")]
+        public string? Municipio { get; set; }
+
+        [JsonPropertyName("uf")]
+        public string? Uf { get; set; }
+
+        [JsonPropertyName("porte")]
+        public string? Porte { get; set; }
+
+        [JsonPropertyName("natureza_juridica")]
+        public string? NaturezaJuridica { get; set; }
+
+        [JsonPropertyName("qsa")]
+        public List<BrasilApiQsaDto>? Qsa { get; set; }
+    }
+
+    private sealed class BrasilApiQsaDto
+    {
+        [JsonPropertyName("nome_socio")]
+        public string? NomeSocio { get; set; }
+
+        [JsonPropertyName("cnpj_cpf_do_socio")]
+        public string? CnpjCpfDoSocio { get; set; }
+
+        [JsonPropertyName("qualificacao_socio")]
+        public string? QualificacaoSocio { get; set; }
+
+        [JsonPropertyName("data_entrada_sociedade")]
+        public string? DataEntradaSociedade { get; set; }
+
+        [JsonPropertyName("faixa_etaria")]
+        public string? FaixaEtaria { get; set; }
+    }
+}
+                
